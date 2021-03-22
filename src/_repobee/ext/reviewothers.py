@@ -27,8 +27,8 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
         actions=[plug.cli.CoreCommand.reviews.assign]
     )
 
-    grader = plug.cli.option(
-        help="name of student grader",
+    graders = plug.cli.option(
+        help="space delimited usernames of student graders",
         required=True,
     )
 
@@ -47,6 +47,8 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
         Returns:
             A list of allocations that
         """
+
+        grader_team = create_team(graders)
         teams = list(teams)
         if num_reviews != 1:
             plug.log.warning(
