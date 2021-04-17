@@ -17,7 +17,7 @@ from typing import List
 import repobee_plug as plug
 
 PLUGIN_DESCRIPTION = (
-    "Allows a set of student graders to be able to review another set of "
+    "Allows a student grader team to be able to review another set of "
     "students; typically the rest of the class."
 )
 
@@ -28,7 +28,7 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
     )
 
     graders = plug.cli.option(
-        help="space delimited usernames of student graders",
+        help="username of student graders",
         required=True,
     )
 
@@ -48,7 +48,7 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
             A list of allocations that
         """
 
-        grader_team = create_team(graders)
+        grader_team = plug.StudentTeam(members=[graders])
         teams = list(teams)
         if num_reviews != 1:
             plug.log.warning(
@@ -61,7 +61,7 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
         for reviewed_team in teams:
             allocations.append(
                 plug.ReviewAllocation(
-                    review_team=grader, reviewed_team=reviewed_team
+                    review_team=grader_team, reviewed_team=reviewed_team
                 )
             )
         return allocations
