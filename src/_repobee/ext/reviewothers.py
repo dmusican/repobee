@@ -6,7 +6,7 @@ instructor can use this plugin to make the other repos in the class
 available to the student graders.
 
 .. module:: reviewothers
-    :synopsis: Plugin that allows a set of student graders to review others.
+    :synopsis: Plugin that allows a student grader to review others.
 
 .. moduleauthor:: Dave Musicant, Simon Larsén
 """
@@ -27,8 +27,8 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
         actions=[plug.cli.CoreCommand.reviews.assign]
     )
 
-    graders = plug.cli.option(
-        help="username of student graders",
+    grader = plug.cli.option(
+        help="username of student grader",
         required=True,
     )
 
@@ -48,7 +48,7 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
             A list of allocations that
         """
 
-        grader_team = plug.StudentTeam(members=[graders])
+        grader_team = plug.StudentTeam(members=[self.grader])
         teams = list(teams)
         if num_reviews != 1:
             plug.log.warning(
