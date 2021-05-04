@@ -1,5 +1,6 @@
 """A peer review plugin which assigns one set of students to review all
 other students.
+
 Intended for student graders who are in the class for which they are grading.
 Once those student graders have submitted their own work to the instructor, the
 instructor can use this plugin to make the other repos in the class
@@ -23,14 +24,13 @@ PLUGIN_DESCRIPTION = (
     "students; typically the rest of the class."
 )
 
-
 class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
     __settings__ = plug.cli.command_extension_settings(
         actions=[plug.cli.CoreCommand.reviews.assign]
     )
 
-    reviewothers_grader = plug.cli.option(
-        help="username of student grader",
+    reviewothers_graders = plug.cli.option(
+        help="usernames of student grader",
         argparse_kwargs={"nargs": "+"},
         required=True,
     )
@@ -47,10 +47,10 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
             teams: Student teams to be reviewed
             num_reviews: Ignored by this plugin.
         Returns:
-            A list of allocations that
+            A list of allocations
         """
 
-        grader_team = plug.StudentTeam(members=self.reviewothers_grader)
+        grader_team = plug.StudentTeam(members=self.reviewothers_graders)
         teams = list(teams)
         if num_reviews != 1:
             plug.log.warning(
