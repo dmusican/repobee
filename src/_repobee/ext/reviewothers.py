@@ -16,6 +16,8 @@ from typing import List
 
 import repobee_plug as plug
 
+PLUGIN_NAME = "reviewothers"
+
 PLUGIN_DESCRIPTION = (
     "Allows a student grader team to be able to review another set of "
     "students; typically the rest of the class."
@@ -27,11 +29,11 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
         actions=[plug.cli.CoreCommand.reviews.assign]
     )
 
-    grader = plug.cli.option(
+    reviewothers_grader = plug.cli.option(
         help="username of student grader",
+        argparse_kwargs={"nargs": "+"},
         required=True,
     )
-
 
     def generate_review_allocations(
         self, teams: List[plug.StudentTeam], num_reviews: int = 1
@@ -48,7 +50,7 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
             A list of allocations that
         """
 
-        grader_team = plug.StudentTeam(members=[self.grader])
+        grader_team = plug.StudentTeam(members=self.reviewothers_grader)
         teams = list(teams)
         if num_reviews != 1:
             plug.log.warning(
@@ -56,6 +58,13 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
                 "num_reviews is ignored".format(num_reviews)
             )
 
+        plug.log.warning('If graders have been previously assigned, '
+                         'the below output that says "Assigning..." '
+                         'will not show the most recent graders added. '
+                         'Nonetheless, they have been added, and running '
+                         'this command a second time will show that.'
+                         'https://github.com/repobee/repobee/issues/790#issuecomment-830774739'
+                        )
 
         allocations = []
         for reviewed_team in teams:
@@ -65,3 +74,4 @@ class ReviewOthers(plug.Plugin, plug.cli.CommandExtension):
                 )
             )
         return allocations
+
